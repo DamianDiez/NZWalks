@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using NZWalks.API.Data;
+using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
 using System.Diagnostics.Tracing;
 
@@ -46,6 +47,11 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRegionAsync(Models.DTO.AddRegionRequest regionDTO)
         {
+            if (!ValidateAddRegionAsync(regionDTO))
+            {
+                return BadRequest(ModelState);
+            }
+
             var region = new Models.Domain.Region()
             {
                 Code = regionDTO.Code,
@@ -62,6 +68,7 @@ namespace NZWalks.API.Controllers
             return CreatedAtAction(nameof(GetRegionAsync), new { id = response.Id }, response);
         }
 
+        
         [HttpDelete]
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteRegionAsync(Guid id)
@@ -80,6 +87,12 @@ namespace NZWalks.API.Controllers
         public async Task<IActionResult> UpdateRegionAsync([FromRoute] Guid id, 
                         [FromBody] Models.DTO.UpdateRegionRequest updateRegionRequest)
         {
+
+            if (!ValidateUpdateRegionAsync(updateRegionRequest))
+            {
+                return BadRequest(ModelState);
+            }
+
             var region = new Models.Domain.Region()
             {
                 Code = updateRegionRequest.Code,
@@ -97,6 +110,69 @@ namespace NZWalks.API.Controllers
             var regionDTO = mapper.Map<Models.DTO.Region>(region);
             return Ok(regionDTO);
         }
+
+        #region private methods
+
+        private bool ValidateAddRegionAsync(AddRegionRequest regionDTO)
+        {
+            if(regionDTO == null){
+                ModelState.AddModelError(nameof(regionDTO),"Add Region Data required.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(regionDTO.Code)){
+                ModelState.AddModelError(nameof(regionDTO.Code), 
+                    $"{nameof(regionDTO.Code)} cannot be null or white space.");
+            }
+            if (string.IsNullOrWhiteSpace(regionDTO.Name)){
+                ModelState.AddModelError(nameof(regionDTO.Name), 
+                    $"{nameof(regionDTO.Name)} cannot be null or white space.");
+            }
+            if (regionDTO.Area <= 0){
+                ModelState.AddModelError(nameof(regionDTO.Area), 
+                    $"{nameof(regionDTO.Area)} cannot be less than or equal to zero.");
+            }
+            if (regionDTO.Population < 0){
+                ModelState.AddModelError(nameof(regionDTO.Population), 
+                    $"{nameof(regionDTO.Population)} cannot be less than zero.");
+            }
+            if(ModelState.ErrorCount > 0)
+                return false;
+            return true;
+        }
+
+        private bool ValidateUpdateRegionAsync(UpdateRegionRequest regionDTO)
+        {
+            if (regionDTO == null)
+            {
+                ModelState.AddModelError(nameof(regionDTO), "Add Region Data required.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(regionDTO.Code))
+            {
+                ModelState.AddModelError(nameof(regionDTO.Code),
+                    $"{nameof(regionDTO.Code)} cannot be null or white space.");
+            }
+            if (string.IsNullOrWhiteSpace(regionDTO.Name))
+            {
+                ModelState.AddModelError(nameof(regionDTO.Name),
+                    $"{nameof(regionDTO.Name)} cannot be null or white space.");
+            }
+            if (regionDTO.Area <= 0)
+            {
+                ModelState.AddModelError(nameof(regionDTO.Area),
+                    $"{nameof(regionDTO.Area)} cannot be less than or equal to zero.");
+            }
+            if (regionDTO.Population < 0)
+            {
+                ModelState.AddModelError(nameof(regionDTO.Population),
+                    $"{nameof(regionDTO.Population)} cannot be less than zero.");
+            }
+            if (ModelState.ErrorCount > 0)
+                return false;
+            return true;
+        }
+
+        #endregion
     }
 }
     
