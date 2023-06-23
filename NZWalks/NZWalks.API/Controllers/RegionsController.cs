@@ -47,10 +47,10 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRegionAsync(Models.DTO.AddRegionRequest regionDTO)
         {
-            if (!ValidateAddRegionAsync(regionDTO))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ValidateAddRegionAsync(regionDTO))
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
             var region = new Models.Domain.Region()
             {
@@ -88,10 +88,10 @@ namespace NZWalks.API.Controllers
                         [FromBody] Models.DTO.UpdateRegionRequest updateRegionRequest)
         {
 
-            if (!ValidateUpdateRegionAsync(updateRegionRequest))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ValidateUpdateRegionAsync(updateRegionRequest))
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
             var region = new Models.Domain.Region()
             {
